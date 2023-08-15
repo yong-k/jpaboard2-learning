@@ -4,6 +4,10 @@ import com.godcoder.myhome.model.Board;
 import com.godcoder.myhome.repository.BoardRepository;
 import com.godcoder.myhome.validator.BoardValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,8 +27,17 @@ public class BoardController {
     private BoardValidator boardValidator;
 
     @GetMapping("/list")
-    public String list(Model model) {
-        List<Board> boards = boardRepository.findAll();
+    public String list(Model model, @PageableDefault(size = 2) Pageable pageable,
+                       @RequestParam(required = false, defaultValue = "") String searchText) {
+        //List<Board> boards = boardRepository.findAll();
+        //→ 페이징처리 추가해보자 (jpa에서 기본적으로 첫번째 페이지는 0부터 시작한다)
+        //Page<Board> boards = boardRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(searchText, searchText, pageable);
+        int startPage = Math.max(1, boards.getPageable().getPageNumber() - 4);
+        int endPage = Math.min(boards.getTotalPages(), boards.getPageable().getPageNumber() + 5);
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("boards", boards);
         return "board/list";
     }
