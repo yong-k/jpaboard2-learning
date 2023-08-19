@@ -20,6 +20,6 @@ public class Board {
     @Size(min=2, max=30, message = "제목은 2자 이상 30자 이하여야 합니다.")
     private String title;
 
-    // Annotaion 말고, Validator라는 custom class를 만들어서 java 코드로 contetn의 validation 체크해보자.
+    // Annotaion 말고, Validator라는 custom class를 만들어서 java 코드로 content의 validation 체크해보자.
     private String content;
 }
